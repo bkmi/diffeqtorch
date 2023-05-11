@@ -8,6 +8,7 @@ from typing import Any, Dict, List, Tuple, Union
 from warnings import warn
 
 import torch
+import numpy as np
 from julia.api import Julia
 from opt_einsum import contract
 
@@ -219,8 +220,8 @@ class DifferentialEquationsJuliaFunction(torch.autograd.Function):
 
             u, du, t = jl.eval(cmd)
 
-            u = torch.tensor(u)
-            du = torch.tensor(du)
+            u = torch.from_numpy(np.asarray(u))
+            du = torch.from_numpy(np.asarray(du))
             t = torch.tensor(t, requires_grad=False)
 
             if debug > 1:
@@ -252,7 +253,7 @@ class DifferentialEquationsJuliaFunction(torch.autograd.Function):
 
             u, t = jl.eval(cmd)
             t = torch.tensor(t, requires_grad=False)
-            u = torch.tensor(u).T
+            u = torch.from_numpy(np.asarray(u)).T
 
             # NOTE: The transpose on u is to ensure that shapes are
             # consistent with the case above in which gradients are computed
